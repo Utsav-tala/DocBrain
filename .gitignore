@@ -29,3 +29,13 @@ data/langchain_issues.json
 # Evaluation results / scratch
 results/
 eval_data/
+
+# Personal notes, planning docs & scratch scripts (not for public repo)
+que_ans_list.md
+implementation_plan.md
+INGEST_V2_PLAN.md
+DocBrain_Project_Idea.md
+tips_docs_load.md
+PROJECT_MEMORY.md
+debug_retrieval.py
+test_keys.py
