@@ -65,7 +65,7 @@ docbrain/
 ├── app.py                  # Streamlit entry point
 ├── ui_components.py        # UI helper components
 ├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variable template
+├── .env.example            # Environment variable template (safe — no real keys)
 ├── src/
 │   ├── ingest.py           # Document ingestion & chunking pipeline
 │   ├── retriever.py        # Retrieval logic (MMR, hybrid search)
@@ -75,9 +75,12 @@ docbrain/
 │   ├── link_resolver.py    # Resolve doc links to full URLs
 │   ├── tools.py            # LangChain tool wrappers
 │   └── evaluation.py       # RAGAS evaluation pipeline
-├── data/                   # Raw documentation (gitignored)
-└── db/                     # ChromaDB vector store (gitignored)
+├── data/                   # ⚠️ Gitignored — regenerate via ingest.py (see below)
+└── db/                     # ⚠️ Gitignored — regenerate via ingest.py (see below)
 ```
+
+> **`data/` and `db/` are not included in this repository.**
+> See [Why are data/ and db/ excluded?](#-why-are-data-and-db-excluded) below.
 
 ---
 
@@ -116,13 +119,21 @@ OPENAI_API_KEY=sk-...
 GOOGLE_API_KEY=AIza...
 ```
 
-### 5. Ingest documentation
+### 5. Ingest documentation (builds `data/` and `db/`)
 
 ```bash
 python -m src.ingest
 ```
 
-This fetches LangChain docs, chunks them, generates embeddings, and stores them in ChromaDB.
+This will:
+1. **Fetch** LangChain conceptual docs, API reference, and GitHub issues
+2. **Chunk** documents into overlapping text segments
+3. **Embed** each chunk using OpenAI `text-embedding-3-small`
+4. **Store** vectors into ChromaDB under `db/chroma_langchain/`
+
+⏱ *Expect ~10–20 min on first run depending on data source size and API throughput.*
+
+> ⚠️ This step costs OpenAI API credits (embedding ~13k chunks ≈ a few cents).
 
 ### 6. Run the app
 
@@ -150,12 +161,37 @@ python -m src.evaluation
 
 ## 📄 Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key for LLM & embeddings |
-| `GOOGLE_API_KEY` | Google Gemini API key (optional fallback) |
+Copy `.env.example` → `.env` and fill in your values. **Never commit `.env`.**
 
-See [`.env.example`](.env.example) for the full list.
+| Variable | Required | Description | Where to get it |
+|----------|----------|-------------|----------------|
+| `OPENAI_API_KEY` | ✅ Yes | LLM responses + embeddings | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| `GOOGLE_API_KEY` | Optional | Gemini LLM fallback | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| `MODEL_NAME` | Optional | LLM to use (`gpt-4o-mini`, `gpt-4o`, `gemini-1.5-pro`) | — |
+| `GITHUB_TOKEN` | Optional | Ingest GitHub Issues as data source | [github.com/settings/tokens](https://github.com/settings/tokens) (scope: `public_repo`) |
+
+See [`.env.example`](.env.example) for the annotated template.
+
+---
+
+## 🗂️ Why are `data/` and `db/` excluded?
+
+These directories are **gitignored intentionally**:
+
+| Directory | Contents | Disk size | Why excluded |
+|-----------|----------|-----------|--------------|
+| `data/` | Raw scraped docs (HTML/JSON) | ~1 GB | Regeneratable; GitHub has a 100 MB per-file hard limit |
+| `db/` | ChromaDB vector store (~13k chunks) | ~200 MB | Binary blobs change every re-embed; GitHub hard-rejects files >100 MB |
+
+**To regenerate after cloning:**
+
+```bash
+# 1. Make sure your .env is configured with OPENAI_API_KEY
+# 2. Run the ingest pipeline — it fetches docs + builds the vector store
+python -m src.ingest
+```
+
+Both directories will be created automatically. No manual download needed.
 
 ---
 
