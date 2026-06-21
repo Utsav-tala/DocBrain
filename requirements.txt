@@ -1,0 +1,17 @@
+langchain
+langchain-openai
+langchain-google-genai
+langchain-community
+chromadb
+openai
+streamlit
+python-dotenv
+unstructured
+tiktoken
+tqdm
+loguru
+ragas
+datasets
+pandas
+beautifulsoup4
+requests

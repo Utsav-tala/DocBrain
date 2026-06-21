@@ -1,0 +1,31 @@
+# Environment
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Vector DB (large binary — regenerate via ingest.py)
+db/chroma_langchain/
+
+# Data (large raw doc dumps — regenerate via ingest.py)
+data/langchain_conceptual_docs/
+data/langchain_codebase/
+data/langchain_issues.json
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Evaluation results / scratch
+results/
+eval_data/
