@@ -143,10 +143,7 @@ def build_rag_chain(model_name: str = "gpt-4o-mini"):
             {"messages": prompt_value.to_messages()},
             config={"recursion_limit": 8}
         )
-        
-        for m in agent_result["messages"]:
-            print(f"[{m.type}] {m.content}")
-        
+
         final_message = agent_result["messages"][-1]
         answer = final_message.content
 
