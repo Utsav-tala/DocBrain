@@ -8,13 +8,17 @@ DocBrain is a **RAG (Retrieval-Augmented Generation)** application that lets dev
 
 ## ✨ Features
 
-- 🔍 **Semantic Search** — Finds the most relevant doc chunks using ChromaDB vector store
-- 🤖 **LLM-Powered Answers** — Uses OpenAI / Gemini to synthesize concise, accurate responses
-- 📎 **Source Citations** — Every answer links back to the original documentation
-- 🔗 **Link Resolution** — Resolves relative doc links to full navigable URLs
-- ✍️ **Output Refinement** — Post-processes LLM output for clarity and formatting
-- 📊 **Evaluation Suite** — RAGAS-based evaluation pipeline for faithfulness, relevance & context recall
-- 🖥️ **Streamlit UI** — Clean, interactive chat interface
+- 🔍 **Semantic Search** — Finds the most relevant doc chunks using a ChromaDB vector store
+- 🎯 **Relevance-First Re-ranking** — Ranks on semantic relevance, with document priority
+  and query intent as a bounded tiebreaker (never enough to outrank a better-matching chunk)
+- 🧭 **Intent Routing** — Classifies the query (concept / code / error / migration / LangGraph)
+  and routes it to a matching prompt template and preferred doc types
+- 🤖 **Agentic Fallback** — A LangGraph ReAct agent falls back to web search + page scraping
+  when the local corpus doesn't cover the question
+- 📎 **Verified Source Links** — Every link is scored against the question and HEAD-checked
+  before it's shown; unverified URLs the LLM invents are stripped from the answer
+- ✍️ **Output Refinement** — Groundedness and format checks on the generated answer
+- 🖥️ **Streamlit UI** — Clean, interactive chat interface with token streaming
 
 ---
 
@@ -26,7 +30,7 @@ User Query
     ▼
 ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
 │  Streamlit  │────▶│  Retriever (RAG) │────▶│  LLM (OpenAI /  │
-│     UI      │     │  ChromaDB + MMR  │     │     Gemini)     │
+│     UI      │     │ ChromaDB + Rerank│     │     Gemini)     │
 └─────────────┘     └──────────────────┘     └─────────────────┘
                             │                         │
                             ▼                         ▼
@@ -51,9 +55,9 @@ User Query
 | **LLM** | OpenAI GPT-4o / Google Gemini |
 | **Embeddings** | OpenAI text-embedding-3-small |
 | **Vector Store** | ChromaDB |
+| **Agent** | LangGraph (ReAct) |
 | **Orchestration** | LangChain |
 | **UI** | Streamlit |
-| **Evaluation** | RAGAS + Datasets |
 | **Language** | Python 3.10+ |
 
 ---
@@ -68,13 +72,13 @@ docbrain/
 ├── .env.example            # Environment variable template (safe — no real keys)
 ├── src/
 │   ├── ingest.py           # Document ingestion & chunking pipeline
-│   ├── retriever.py        # Retrieval logic (MMR, hybrid search)
-│   ├── chain.py            # LangChain RAG chain
+│   ├── retriever.py        # Intent routing + relevance-first re-ranking
+│   ├── chain.py            # LangGraph ReAct agent + streaming
 │   ├── prompt_templates.py # System & user prompt templates
-│   ├── output_refiner.py   # Post-processing LLM output
-│   ├── link_resolver.py    # Resolve doc links to full URLs
-│   ├── tools.py            # LangChain tool wrappers
-│   └── evaluation.py       # RAGAS evaluation pipeline
+│   ├── output_refiner.py   # Groundedness / format / link sanitization
+│   ├── link_resolver.py    # Relevance-scored, HEAD-verified source links
+│   ├── tools.py            # Agent tools (web search, page scraping)
+│   └── evaluation.py       # ⚠️ Not implemented yet — see Roadmap
 ├── data/                   # ⚠️ Gitignored — regenerate via ingest.py (see below)
 └── db/                     # ⚠️ Gitignored — regenerate via ingest.py (see below)
 ```
@@ -147,15 +151,49 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ## 🧪 Evaluation
 
-DocBrain includes a RAGAS-based evaluation suite to measure:
+> **Status: not built yet.** `src/evaluation.py` is currently an empty placeholder.
+> There are no measured quality numbers for this project, and any you see claimed
+> elsewhere would be fabricated. This is the next major piece of work.
 
-- **Faithfulness** — Does the answer stay true to the retrieved context?
-- **Answer Relevancy** — Is the answer relevant to the question?
-- **Context Recall** — How much of the ground-truth is covered?
+The planned harness measures:
 
-```bash
-python -m src.evaluation
-```
+- **Retrieval** — recall@k and MRR against a hand-labelled golden set
+- **Faithfulness** — does the answer stay true to the retrieved context?
+- **Answer Relevancy** — is the answer relevant to the question?
+- **Cost & Latency** — tokens and p50/p95 per query, per config
+
+---
+
+## ⚠️ Known Limitations
+
+Documented honestly rather than hidden — these are real, reproducible, and open.
+
+**1. Corpus coverage gaps are invisible to the retriever.**
+The relevance score is min-max normalized *within* each candidate pool, so the
+top-ranked chunk always scores `1.0` — even when all 60 candidates are irrelevant.
+The system cannot currently distinguish *"I found a great answer"* from *"this is
+the least-bad of 60 bad chunks."* The raw distance is carried through in metadata
+(`raw_distance`) but no threshold is calibrated against it yet.
+
+**2. `"What is LCEL?"` is a known failure case.**
+LangChain's current docs de-emphasized LCEL as a concept page, so the scraped corpus
+contains no LCEL explainer — only a source-code docstring in
+`langchain_core/runnables/__init__.py`. Retrieval correctly surfaces that docstring
+as the best available chunk, but the rest of the context is noise. Typical distance
+for this query is ~1.20 vs ~0.61 for a well-covered query like an `ImportError` —
+roughly **2× worse**, which is exactly the signal a calibrated threshold should use
+to trigger the web-search fallback instead of leaving that call to the agent.
+
+**3. The web-search fallback fires on the agent's judgment, not a measurement.**
+See (1) and (2) — this should be driven by an absolute relevance threshold.
+
+**4. Streaming shows unverified links briefly.**
+Link sanitization can only run after the full answer is generated, so the live
+stream may flash a URL that the stored version later strips. Fixing this properly
+would require buffering the whole response, which defeats streaming.
+
+**5. Session history is in-memory.**
+`_history_store` is a plain dict — conversations do not survive a restart.
 
 ---
 
@@ -197,9 +235,25 @@ Both directories will be created automatically. No manual download needed.
 
 ## 🗺️ Roadmap
 
-- [ ] Multi-framework support (FastAPI, Django, SQLAlchemy docs)
-- [ ] Streaming responses in UI
+**Next up — evaluation (the current priority):**
+
+- [ ] Golden set: ~150 questions with hand-labelled correct source documents
+- [ ] Retrieval metrics: recall@k, MRR
+- [ ] Answer metrics: faithfulness, answer relevancy
+- [ ] Calibrate an absolute relevance threshold to trigger the web-search fallback
+- [ ] Ablation study: chunking, dense vs hybrid, reranker on/off — with cost & latency
+
+**Then — retrieval quality:**
+
+- [ ] Hybrid search (BM25 + dense) — dense retrieval is weak on exact symbols
+      like `LLMChain` or `AttributeError`, which this corpus is full of
+- [ ] Cross-encoder reranker
+
+**Later:**
+
+- [x] Streaming responses in UI
 - [ ] Persistent conversation memory
+- [ ] Multi-framework support (FastAPI, Django, SQLAlchemy docs)
 - [ ] Self-updating ingestion pipeline (detect doc changes)
 - [ ] Docker deployment
 - [ ] Hosted demo on Streamlit Cloud
