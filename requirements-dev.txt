@@ -18,6 +18,3 @@ tqdm==4.68.2
 ragas==0.4.3
 datasets==5.0.0
 pandas==3.0.3
-
-# Optional Gemini fallback LLM (not used by the default gpt-4o-mini path)
-langchain-google-genai==4.2.5
