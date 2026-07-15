@@ -1,0 +1,18 @@
+# DocBrain — dark theme foundation.
+# Setting base="dark" makes ALL native widgets (code blocks, feedback, selectbox,
+# sliders, chat bubbles) render dark-aware out of the box, so ui_components.py CSS
+# only refines spacing/shape instead of fighting a light default.
+
+[theme]
+base = "dark"
+primaryColor = "#6366F1"
+backgroundColor = "#0A0B0F"
+secondaryBackgroundColor = "#171923"
+textColor = "#E6EAF3"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

@@ -1,100 +1,93 @@
 """
-app.py — DocBrain v3 UI
-- User messages RIGHT side, DB messages LEFT side
-- Code blocks rendered via st.code() (proper syntax highlighting, no HTML mess)
-- Text parts rendered as HTML markdown
-- Larger font sizes, cleaner layout
+app.py — DocBrain chat UI (native Streamlit chat primitives)
+
+Rewritten from hand-rolled HTML bubbles to st.chat_message + st.write_stream:
+  - st.chat_message() is a real DOM container → it wraps ALL content correctly
+    (markdown, code blocks, source-link pills, feedback), so nothing spills
+    edge-to-edge or detaches from its bubble.
+  - st.write_stream() streams tokens through the SAME native markdown renderer used
+    for the stored message → no reflow/jump when streaming ends.
+  - Source links + a meta caption + thumbs feedback live INSIDE the assistant bubble.
+  - Starter prompts are real buttons that submit; the empty-state input is normal size.
 """
 
-import streamlit as st
 import time
-import os
+import uuid
+import streamlit as st
 from loguru import logger
 from dotenv import load_dotenv
-import uuid
 
 from ui_components import (
     DOCBRAIN_CSS,
-    split_answer_into_parts,
+    HEADER_HTML,
+    render_hero,
     render_source_links,
-    render_thought_stream,
-    render_empty_state,
-    render_stats_bar,
-    render_live_message,
+    STARTER_QUERIES,
     SIDEBAR_LOGO,
     sidebar_section,
 )
 
 load_dotenv()
 
-# ── Page Config ────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="DocBrain",
     page_icon="🧠",
-    layout="wide",
-    initial_sidebar_state="collapsed",
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
-
 st.markdown(DOCBRAIN_CSS, unsafe_allow_html=True)
 
-# ── Cached Chain ───────────────────────────────────────────────────────────────
+USER_AVATAR = "🧑‍💻"
+BOT_AVATAR  = "🧠"
+
+
+# ── Cached chain ──────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def get_chain(model_name: str):
     from src.chain import build_streaming_chain
     return build_streaming_chain(model_name=model_name)
 
 
-# ── Session State ──────────────────────────────────────────────────────────────
+# ── Session state ─────────────────────────────────────────────────────────────
 def init_session():
     defaults = {
         "messages":    [],
         "query_count": 0,
         "model":       "gpt-4o-mini",
-        "fetch_k":     60,
-        "top_k":       5,
-        "loading":     False,
         "session_id":  str(uuid.uuid4()),
     }
     for k, v in defaults.items():
-        if k not in st.session_state:
-            st.session_state[k] = v
+        st.session_state.setdefault(k, v)
 
 init_session()
 
 
-# ── Sidebar ────────────────────────────────────────────────────────────────────
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(SIDEBAR_LOGO, unsafe_allow_html=True)
 
     st.markdown(sidebar_section("Model"), unsafe_allow_html=True)
-    model_choice = st.selectbox(
-        "LLM",
-        options=["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"],
-        index=["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"].index(st.session_state.model),
+    models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
+    st.session_state.model = st.selectbox(
+        "LLM", models,
+        index=models.index(st.session_state.model),
         label_visibility="collapsed",
     )
-    if model_choice != st.session_state.model:
-        st.session_state.model = model_choice
 
-    st.markdown(sidebar_section("Retrieval"), unsafe_allow_html=True)
-    fetch_k = st.slider(
-        "Candidate Pool (fetch_k)",
-        min_value=20, max_value=100, step=10,
-        value=st.session_state.fetch_k,
-        help="MMR casts this many candidates before re-ranking.",
+    st.markdown(sidebar_section("Pipeline"), unsafe_allow_html=True)
+    st.markdown(
+        "<div class='db-cfg'>"
+        "<div><span>Candidate pool</span><b>60</b></div>"
+        "<div><span>Chunks → LLM</span><b>5</b></div>"
+        "<div><span>Gap threshold</span><b>0.80</b></div>"
+        "<div><span>Corpus</span><b>13,093 chunks</b></div>"
+        "</div>",
+        unsafe_allow_html=True,
     )
-    top_k = st.slider(
-        "Chunks Returned (top_k)",
-        min_value=3, max_value=10, step=1,
-        value=st.session_state.top_k,
-        help="Final chunks passed to the LLM.",
-    )
-    st.session_state.fetch_k = fetch_k
-    st.session_state.top_k   = top_k
 
     st.markdown(sidebar_section("Session"), unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
+    c1, c2 = st.columns([1, 1])
+    with c1:
         if st.button("Clear chat", use_container_width=True):
             from src.chain import clear_session_history
             clear_session_history(st.session_state.session_id)
@@ -102,200 +95,123 @@ with st.sidebar:
             st.session_state.query_count = 0
             st.session_state.session_id  = str(uuid.uuid4())
             st.rerun()
-    with col2:
+    with c2:
         st.metric("Queries", st.session_state.query_count)
 
     st.markdown(sidebar_section("About"), unsafe_allow_html=True)
     st.markdown(
-        "<div style='font-size:12px; color:#3D4560; line-height:1.6;'>"
-        "RAG over LangChain docs, source code, error references, migration guides, "
-        "and GitHub issues.<br>v3 pipeline · 13,093 chunks · 9 doc types."
-        "</div>",
+        "<div class='db-about'>RAG over LangChain docs, source code, error references, "
+        "migration guides & GitHub issues. Agentic web-search fallback fires when local "
+        "coverage is weak.</div>",
         unsafe_allow_html=True,
     )
 
 
-# ── Main Chat Area ─────────────────────────────────────────────────────────────
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
-
-# Page header
-st.markdown("""
-<div class="page-header">
-  <h1>🧠 DocBrain</h1>
-  <p>LangChain developer documentation assistant · v3 pipeline</p>
-</div>
-""", unsafe_allow_html=True)
+# ── Header ────────────────────────────────────────────────────────────────────
+st.markdown(HEADER_HTML, unsafe_allow_html=True)
 
 
-# ── Message Rendering ──────────────────────────────────────────────────────────
-
-def render_assistant_message(msg: dict, idx: int):
-    """
-    Render one assistant turn:
-      - Left-aligned bubble with DB avatar
-      - Text rendered as HTML markdown
-      - Code blocks rendered via st.code() (NO HTML — proper highlighting)
-      - Verified source link buttons below
-      - Feedback buttons
-    """
-    ts = msg.get("ts", "")
-
-    # Open assistant row + avatar + body
-    st.markdown(f"""
-<div class="msg-assistant-row">
-  <div class="msg-avatar">DB</div>
-  <div class="msg-assistant-body">
-    <div class="msg-meta">DocBrain · {ts}</div>
-    <div class="msg-text">
-""", unsafe_allow_html=True)
-
-    # Split answer into html parts and code parts
-    parts = split_answer_into_parts(msg["content"])
-    for part in parts:
-        if part["type"] == "html":
-            st.markdown(part["content"], unsafe_allow_html=True)
-        else:
-            # st.code() gives proper syntax highlighting, copy button, clean display
-            st.code(part["content"], language=part.get("lang", "python"))
-
-    # Close msg-text div, add source link buttons, close body + row
-    links_html = render_source_links(msg.get("links", []))
-    st.markdown(f"""
-    </div>
-    {links_html}
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-    # Feedback buttons (must be real Streamlit widgets — outside the HTML)
-    fb_state = msg.get("feedback", None)
-    fb_col1, fb_col2, fb_col3 = st.columns([0.05, 0.05, 0.9])
-    with fb_col1:
-        label = "✅" if fb_state == "up" else "👍"
-        if st.button(label, key=f"fb_up_{idx}", help="Good answer"):
-            st.session_state.messages[idx]["feedback"] = "up"
-            logger.info(f"[FEEDBACK] idx={idx} vote=up")
-            st.rerun()
-    with fb_col2:
-        label = "❌" if fb_state == "down" else "👎"
-        if st.button(label, key=f"fb_down_{idx}", help="Bad answer"):
-            st.session_state.messages[idx]["feedback"] = "down"
-            logger.info(f"[FEEDBACK] idx={idx} vote=down")
-            st.rerun()
+# ── Helpers ───────────────────────────────────────────────────────────────────
+def _meta_caption(intent: str, elapsed, model: str) -> str:
+    bits = []
+    if intent:
+        bits.append(intent.replace("_", " "))
+    if elapsed is not None:
+        bits.append(f"{elapsed}s")
+    if model:
+        bits.append(model)
+    return " · ".join(bits)
 
 
-# ── Show conversation ──────────────────────────────────────────────────────────
+def render_assistant_extras(msg: dict, idx: int):
+    """Source-link pills + meta caption + thumbs feedback, inside the bubble."""
+    links = msg.get("links", [])
+    if links:
+        st.markdown(render_source_links(links), unsafe_allow_html=True)
+    caption = _meta_caption(msg.get("intent", ""), msg.get("elapsed"), msg.get("model", ""))
+    if caption:
+        st.caption(caption)
+    st.feedback("thumbs", key=f"fb_{idx}")
+
+
+# ── Resolve the incoming prompt (typed input OR a clicked starter) ────────────
+typed = st.chat_input("Ask anything about LangChain, LangGraph, or LCEL…")
+prompt = typed or st.session_state.pop("pending_query", None)
+prompt = prompt.strip() if prompt else None
+
+# Append the user turn BEFORE rendering, so the hero hides and history includes it.
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+
+# ── Conversation OR empty-state hero ──────────────────────────────────────────
 if not st.session_state.messages:
-    st.markdown(render_empty_state(), unsafe_allow_html=True)
+    st.markdown(render_hero(), unsafe_allow_html=True)
+    st.markdown("<div class='db-starter-label'>Try asking</div>", unsafe_allow_html=True)
+    cols = st.columns(2)
+    for i, q in enumerate(STARTER_QUERIES):
+        with cols[i % 2]:
+            if st.button(q, key=f"starter_{i}", use_container_width=True):
+                st.session_state.pending_query = q
+                st.rerun()
 else:
     for idx, msg in enumerate(st.session_state.messages):
         if msg["role"] == "user":
-            # RIGHT side — just HTML, no widgets needed
-            st.markdown(f"""
-<div class="msg-user-row">
-  <div class="msg-user-bubble">{msg["content"]}</div>
-</div>
-""", unsafe_allow_html=True)
-
+            with st.chat_message("user", avatar=USER_AVATAR):
+                st.markdown(msg["content"])
+                # hidden hook so CSS can tint the user's bubble (see .db-user-mark)
+                st.markdown("<span class='db-user-mark'></span>", unsafe_allow_html=True)
         else:
-            render_assistant_message(msg, idx)
-
-            if idx < len(st.session_state.messages) - 1:
-                st.markdown('<div class="turn-divider"></div>', unsafe_allow_html=True)
-
-
-# ── Loading State ──────────────────────────────────────────────────────────────
-if st.session_state.loading:
-    st.markdown(f"""
-<div class="msg-assistant-row">
-  <div class="msg-avatar">DB</div>
-  <div class="msg-assistant-body">
-    {render_thought_stream()}
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)  # close .main-content
+            with st.chat_message("assistant", avatar=BOT_AVATAR):
+                st.markdown(msg["content"])
+                render_assistant_extras(msg, idx)
 
 
-# ── Chat Input ─────────────────────────────────────────────────────────────────
-user_input = st.chat_input(
-    "Ask anything about LangChain, LangGraph, or LCEL…",
-    key="chat_input",
-)
+# ── Generate the assistant turn for a freshly-added user prompt ───────────────
+if prompt:
+    logger.info(f"[QUERY #{st.session_state.query_count + 1}] {prompt}")
 
-if user_input and user_input.strip():
-    query = user_input.strip()
-    logger.info(f"[QUERY #{st.session_state.query_count + 1}] {query}")
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
+        try:
+            chain  = get_chain(st.session_state.model)
+            t0     = time.time()
+            result = chain(prompt, session_id=st.session_state.session_id)
+
+            # One native renderer for streaming AND storage → no reflow on completion.
+            answer  = st.write_stream(result["stream"])
+            elapsed = round(time.time() - t0, 1)
+
+            # links_holder is mutated as a side effect of fully consuming the stream,
+            # so it must be read AFTER st.write_stream returns. Source-link pills, the
+            # meta caption and the feedback widget are rendered by the history path
+            # (render_assistant_extras) after the rerun below — not inline — so the
+            # completed turn has one canonical render with stable widget keys.
+            links  = result["links"]["links"]
+            intent = result.get("intent", "")
+            logger.info(
+                f"[RESPONSE] q#{st.session_state.query_count + 1} | elapsed={elapsed}s | "
+                f"links={len(links)} | intent={intent} | model={st.session_state.model}"
+            )
+
+        except Exception as e:
+            logger.error(f"[ERROR] {e}")
+            answer  = (
+                "Something went wrong.\n\n"
+                f"**Error:** `{e}`\n\n"
+                "Check your `.env` and that ChromaDB is populated (`python -m src.ingest`)."
+            )
+            st.markdown(answer)
+            links, intent, elapsed = [], "", None
+
     st.session_state.messages.append({
-        "role":    "user",
-        "content": query,
-        "ts":      time.strftime("%H:%M"),
+        "role":    "assistant",
+        "content": answer,
+        "links":   links,
+        "intent":  intent,
+        "elapsed": elapsed,
+        "model":   st.session_state.model,
     })
-    st.session_state.loading = True
+    st.session_state.query_count += 1
+    # Re-run so the completed turn re-renders through the history path (feedback widget
+    # with a stable key) and the sidebar "Queries" count reflects this turn.
     st.rerun()
-
-
-# ── Generate Response ──────────────────────────────────────────────────────────
-if (
-    st.session_state.loading
-    and st.session_state.messages
-    and st.session_state.messages[-1]["role"] == "user"
-):
-    query      = st.session_state.messages[-1]["content"]
-    session_id = st.session_state.session_id
-
-    try:
-        chain   = get_chain(st.session_state.model)
-        t_start = time.time()
-
-        # Get stream generator
-        result = chain(query, session_id=session_id)
-        
-        # Create a placeholder and stream text into it
-        placeholder = st.empty()
-        full_response = ""
-        
-        for chunk in result["stream"]:
-            full_response += chunk
-            placeholder.markdown(render_live_message(full_response + " ▌", "Generating..."), unsafe_allow_html=True)
-            
-        elapsed = round(time.time() - t_start, 1)
-
-        # links_holder is mutated by the generator above as a side effect of
-        # fully consuming result["stream"] — must be read AFTER the loop, not before.
-        resolved_links = result["links"]["links"]
-
-        logger.info(
-            f"[RESPONSE] idx={st.session_state.query_count} | "
-            f"elapsed={elapsed}s | chunks={len(result['docs'])} | "
-            f"links={len(resolved_links)} | "
-            f"intent={result['intent']} | model={st.session_state.model}"
-        )
-
-        st.session_state.messages.append({
-            "role":     "assistant",
-            "content":  full_response,
-            "docs":     result["docs"],
-            "links":    resolved_links,
-            "intent":   result["intent"],
-            "feedback": None,
-            "ts":       time.strftime("%H:%M"),
-            "elapsed":  elapsed,
-        })
-        st.session_state.query_count += 1
-
-    except Exception as e:
-        logger.error(f"[ERROR] {e}")
-        st.session_state.messages.append({
-            "role":     "assistant",
-            "content":  f"Something went wrong.\n\n**Error:** `{e}`\n\nCheck your `.env` and that ChromaDB is populated.",
-            "docs":     [],
-            "links":    [],
-            "feedback": None,
-            "ts":       time.strftime("%H:%M"),
-        })
-
-    finally:
-        st.session_state.loading = False
-        st.rerun()
