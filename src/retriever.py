@@ -70,6 +70,16 @@ MIN_PREFERRED   = 2      # min preferred-type chunks before fallback triggers
 FALLBACK_K      = 5      # chunks pulled per doc_type in the targeted fallback
 MAX_PER_FILE    = 2      # diversity cap: max chunks one source file may contribute
 
+# Absolute top-1 distance at/above which the corpus probably does NOT cover the query
+# — the point where the agent should stop trusting local docs and search the web.
+# Calibrated on the golden set (results/eval_v5.json): raw_distance >= 0.80 catches
+# 6/6 coverage-gap questions (sensitivity 1.0) at 12/32 false alarms on covered ones
+# (specificity 0.625, Youden's J 0.625). Deliberately tuned to favour recall on gaps:
+# an occasional needless web search is cheaper than a confident hallucination. This is
+# the ONLY cross-query-comparable signal — semantic_score is normalized in-pool and is
+# always 1.0 at the top, so it cannot answer "do we actually cover this?".
+GAP_DISTANCE_THRESHOLD = 0.80
+
 # ── Re-rank weights ───────────────────────────────────────────────────────────
 # Relevance is normalized to [0,1] within the candidate pool, so the metadata
 # nudge below must stay well under 1.0 or it starts overriding relevance again —
@@ -439,8 +449,24 @@ def retrieve(query: str, vectorstore=None) -> tuple[list, dict]:
     for doc in results:
         doc.page_content = strip_context_header(doc.page_content)
 
+    # Stage 6 (B-12): coverage-gap signal. The top chunk's ABSOLUTE distance
+    # (raw_distance, not the in-pool normalized semantic_score) is the only
+    # cross-query-comparable measure of "does the corpus actually cover this?".
+    # Above the calibrated threshold, flag it so chain.py can force the web-search
+    # path instead of leaving that judgment to the agent. Returned on a COPY of the
+    # rule — rule is a shared module-level dict and must not be mutated across calls.
+    top1_distance   = results[0].metadata.get("raw_distance") if results else None
+    is_coverage_gap = top1_distance is not None and top1_distance >= GAP_DISTANCE_THRESHOLD
+    signal_rule     = {**rule, "top1_distance": top1_distance, "is_coverage_gap": is_coverage_gap}
+
+    if is_coverage_gap:
+        logger.warning(
+            f"   Coverage gap: top1_distance={top1_distance:.3f} >= {GAP_DISTANCE_THRESHOLD} "
+            f"— local corpus likely does not cover this; web search advised"
+        )
+
     logger.info(f"   Final chunks: {len(results)} | intent: {rule['intent']}")
-    return results, rule     # B-10: return rule for prompt routing
+    return results, signal_rule     # B-10: rule for prompt routing; B-12: + gap signal
 
 
 # ── Source URL Converter ──────────────────────────────────────────────────────

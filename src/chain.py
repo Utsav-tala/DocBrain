@@ -86,6 +86,31 @@ def format_context(docs: list) -> str:
 
     return "\n".join(formatted)
 
+# ── Coverage-gap directive ────────────────────────────────────────────────────
+def flag_low_coverage(context: str, rule: dict) -> str:
+    """
+    Prepend a measurement-driven web-search directive when retrieval signalled a
+    coverage gap (top-1 distance >= retriever.GAP_DISTANCE_THRESHOLD).
+
+    This turns "should I fall back to the web?" from the agent's judgment of the
+    context into a calibrated number (see retriever.py). The local chunks are still
+    passed through unchanged: the threshold favours recall on gaps, so ~1/3 of
+    covered questions also trip it, and dropping their context would hurt more than
+    the occasional extra search. On a real gap the agent gets an explicit push to
+    the web_search tool; on a false alarm it just double-checks against the web.
+    """
+    if not rule.get("is_coverage_gap"):
+        return context
+    dist   = rule.get("top1_distance")
+    dist_s = f" (top-1 distance {dist:.2f})" if dist is not None else ""
+    banner = (
+        f"⚠️ LOW LOCAL COVERAGE{dist_s} — retrieval confidence is low for this query. "
+        "The local context below may not cover the question. Call the "
+        "`web_search_langchain` tool to find or confirm the answer before responding; "
+        "do not answer from weak context alone.\n\n"
+    )
+    return banner + context
+
 # ── Query Rewriter ────────────────────────────────────────────────────────────
 def rewrite_query(raw_query: str, history_messages: list, llm: ChatOpenAI) -> str:
     try:
@@ -130,7 +155,7 @@ def build_rag_chain(model_name: str = "gpt-4o-mini"):
         intent     = rule["intent"]
         logger.info(f"    Intent: {intent} | Chunks: {len(docs)}")
 
-        context = format_context(docs)
+        context = flag_low_coverage(format_context(docs), rule)
 
         prompt_template = get_prompt(intent, rewritten_query)
         prompt_value = prompt_template.invoke({
@@ -206,7 +231,7 @@ def build_streaming_chain(model_name: str = "gpt-4o-mini"):
         rewritten_query = rewrite_query(question, history_messages, llm_rewrite)
         docs, rule      = retrieve(rewritten_query, vectorstore)
         intent          = rule["intent"]
-        context         = format_context(docs)
+        context         = flag_low_coverage(format_context(docs), rule)
         
         prompt_template = get_prompt(intent, rewritten_query)
         prompt_value = prompt_template.invoke({
