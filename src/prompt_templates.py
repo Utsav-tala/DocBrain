@@ -12,7 +12,7 @@ Core principles extracted from examples:
   7. Use flow diagrams (text art with arrows) for pipelines
   8. Comparison tables only when genuinely comparing two things
   9. Bullet lists for options/types — keep them short and scannable
-  10. End with source URL as a plain reference line, no heading
+  10. Do NOT append a source URL — the app renders verified source links separately
   11. Aim for ~half the length of the examples — dense and useful, not padded
   12. NEVER use headings that describe your own response structure
       (e.g. never write "## Explanation", "## Answer", "## Example")
@@ -54,7 +54,7 @@ Use ONLY the retrieved context below to answer.
 
 ⚠️ CRITICAL — CODE RULE: Every line of Python code you write MUST be directly supported by
 the retrieved context. If the context does not contain a working code example, say:
-"The docs don't include a code example for this — refer to the source URL."
+"The docs don't include a code example for this — check the linked sources below."
 NEVER invent class names, function signatures, or import paths that are not in the context.
 If you see a pattern in context (e.g. `prompt | llm | parser`), you may use it.
 If you don't see it in context, do not write it.
@@ -90,9 +90,11 @@ RESPONSE STYLE — follow every rule:
 7. LENGTH — dense and useful. Roughly half the length of a textbook answer.
    No padding, no repetition, no restating the question.
 
-8. SOURCE LINE — last line of every answer:
-   Source: <url from context metadata>
-   Never a "## Sources" heading.
+8. NO SOURCE LINKS IN THE ANSWER BODY.
+   Do NOT write a "Source:" line, a "## Sources" heading, or any raw http(s) URL.
+   The app renders verified, relevance-ranked source links in a separate row below
+   your answer — anything you write is redundant and frequently points at the wrong
+   page. End on the content itself.
 
 9. CONTEXT COMPLETENESS & TOOLS:
    - Sufficient → full answer per rules above
@@ -133,7 +135,6 @@ Pattern to follow (do NOT copy these as headings — use them as mental structur
 - One worked example: a plain sentence intro + code block
 - If multiple patterns exist: each gets a plain-sentence intro + code block
 - A short "use X when Y" decision guide as bullets
-- Source line at the end
 """),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
@@ -159,8 +160,6 @@ Pattern to follow:
 - After the code: bullet list of key parameters if relevant
   Format: `param_name` (type) — what it controls
 - 1-2 most common mistakes as bullets (only if clearly present in context)
-- Source line at the end
-
 The code must be complete and runnable. Write comments like:
   # Step 1: create the embeddings model
   # Step 2: build the vectorstore
@@ -189,7 +188,6 @@ Pattern to follow:
   with a plain intro line before it
 - Prevention: 2-3 bullets of how to avoid this
 - If there are alternative causes: mention them briefly
-- Source line at the end
 """),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
@@ -213,8 +211,6 @@ Pattern to follow:
 - Code example for Option A (plain intro sentence + code block)
 - Code example for Option B (plain intro sentence + code block)
 - Decision bullets: "Use X when..." / "Use Y when..."
-- Source line at the end
-
 Do NOT repeat information from the table in prose below it.
 """),
     MessagesPlaceholder(variable_name="history"),
@@ -239,7 +235,6 @@ Pattern to follow:
 - "The new way:" + code block showing new pattern
 - Numbered migration steps (the sequence a developer follows)
 - Breaking changes as bullets: "`old_thing` → `new_thing`"
-- Source line at the end
 """),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
@@ -264,7 +259,6 @@ Pattern to follow:
 - Flow diagram showing execution (text art with arrows)
 - Minimal working Python example with inline comments
 - "Use LangGraph when:" bullets vs "Use plain LCEL when:" bullets
-- Source line at the end
 """),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
@@ -283,7 +277,6 @@ Answer this question following the style rules exactly.
 Adapt the structure to what the question actually needs.
 Do NOT impose a rigid template. Let the question determine the shape of the answer.
 Always use code blocks where code is relevant.
-Always end with a source line.
 """),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{question}"),
