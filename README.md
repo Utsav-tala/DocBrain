@@ -78,7 +78,7 @@ docbrain/
 │   ├── output_refiner.py   # Groundedness / format / link sanitization
 │   ├── link_resolver.py    # Relevance-scored, HEAD-verified source links
 │   ├── tools.py            # Agent tools (web search, page scraping)
-│   └── evaluation.py       # ⚠️ Not implemented yet — see Roadmap
+│   └── evaluation.py       # Retrieval eval harness — hit@k, recall@k, MRR
 ├── data/                   # ⚠️ Gitignored — regenerate via ingest.py (see below)
 └── db/                     # ⚠️ Gitignored — regenerate via ingest.py (see below)
 ```
@@ -151,13 +151,35 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ## 🧪 Evaluation
 
-> **Status: not built yet.** `src/evaluation.py` is currently an empty placeholder.
-> There are no measured quality numbers for this project, and any you see claimed
-> elsewhere would be fabricated. This is the next major piece of work.
+Retrieval quality is **measured, not asserted**. `src/evaluation.py` scores retrieval
+against a hand-labelled golden set (`eval_data/golden_set.jsonl` — 32 covered + 6
+coverage-gap questions) at **source-file granularity**, so labels stay stable across
+re-embeds. The metrics are pure set comparison — no LLM judge — so they're
+deterministic, free, and reproducible.
 
-The planned harness measures:
+```bash
+python -m src.evaluation --k 5 --label v5
+```
 
-- **Retrieval** — recall@k and MRR against a hand-labelled golden set
+Measured results (k=5):
+
+| Version | hit@5 | recall@5 | MRR |
+|---------|:-----:|:--------:|:---:|
+| v4 — rerank on metadata alone | 0.875 | 0.833 | **0.788** |
+| **v5 — relevance-first rerank** | **0.906** | **0.865** | 0.745 |
+
+v5 finds the right document more often (hit@5 and recall@5 both up). MRR dipped
+slightly — the right doc is found more but ranked *first* a little less — which points
+at ranking order (a cross-encoder reranker) as the next lever.
+
+**Coverage-gap detection.** Questions the corpus can't answer are scored on a
+different question — *did the system notice it couldn't answer?* — by calibrating an
+absolute `raw_distance` threshold. The current fit (`raw_distance ≥ 0.80`) catches
+6/6 gap questions at 12/32 false alarms (Youden's J = 0.625) and is **wired into the
+retriever** to force the web-search fallback (see `retriever.py:GAP_DISTANCE_THRESHOLD`).
+
+Still to build (these need an LLM judge — tracked in the Roadmap):
+
 - **Faithfulness** — does the answer stay true to the retrieved context?
 - **Answer Relevancy** — is the answer relevant to the question?
 - **Cost & Latency** — tokens and p50/p95 per query, per config
@@ -181,11 +203,17 @@ contains no LCEL explainer — only a source-code docstring in
 `langchain_core/runnables/__init__.py`. Retrieval correctly surfaces that docstring
 as the best available chunk, but the rest of the context is noise. Typical distance
 for this query is ~1.20 vs ~0.61 for a well-covered query like an `ImportError` —
-roughly **2× worse**, which is exactly the signal a calibrated threshold should use
-to trigger the web-search fallback instead of leaving that call to the agent.
+roughly **2× worse**. That is the signal the calibrated `raw_distance ≥ 0.80`
+threshold now uses to force the web-search fallback (see Evaluation), instead of
+leaving the call to the agent. Live, this query is flagged as a gap and routed to
+web search rather than answered from the lone docstring.
 
-**3. The web-search fallback fires on the agent's judgment, not a measurement.**
-See (1) and (2) — this should be driven by an absolute relevance threshold.
+**3. The gap threshold is calibrated on very little data.**
+The web-search fallback is now driven by a measured `raw_distance ≥ 0.80` threshold
+rather than the agent's judgment — but it's fit on only 6 gap questions. It catches
+all of them and false-alarms on ~1/3 of covered questions (Youden's J = 0.625). It
+favours recall on gaps by design (a needless web search beats a confident
+hallucination), but needs a larger golden set to tighten specificity.
 
 **4. Streaming shows unverified links briefly.**
 Link sanitization can only run after the full answer is generated, so the live
@@ -235,12 +263,12 @@ Both directories will be created automatically. No manual download needed.
 
 ## 🗺️ Roadmap
 
-**Next up — evaluation (the current priority):**
+**Evaluation — retrieval done, answer-quality next:**
 
-- [ ] Golden set: ~150 questions with hand-labelled correct source documents
-- [ ] Retrieval metrics: recall@k, MRR
-- [ ] Answer metrics: faithfulness, answer relevancy
-- [ ] Calibrate an absolute relevance threshold to trigger the web-search fallback
+- [x] Retrieval metrics: hit@k, recall@k, MRR against a labelled golden set
+- [x] Calibrate an absolute distance threshold + wire it to the web-search fallback
+- [ ] Grow the golden set (38 → ~150) to tighten the gap threshold's specificity
+- [ ] Answer metrics: faithfulness, answer relevancy (needs an LLM judge)
 - [ ] Ablation study: chunking, dense vs hybrid, reranker on/off — with cost & latency
 
 **Then — retrieval quality:**
