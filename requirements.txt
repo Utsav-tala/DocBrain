@@ -1,17 +1,33 @@
-langchain
-langchain-openai
-langchain-google-genai
-langchain-community
-chromadb
-openai
-streamlit
-python-dotenv
-unstructured
-tiktoken
-tqdm
-loguru
-ragas
-datasets
-pandas
-beautifulsoup4
-requests
+# ─────────────────────────────────────────────────────────────────────────────
+# DocBrain — SERVING dependencies (what Streamlit Community Cloud installs)
+# ─────────────────────────────────────────────────────────────────────────────
+# Lean + PINNED to the exact versions the app was built against, so a fresh cloud
+# build can't silently pull a breaking newer release. Ingest/eval-only packages
+# (ragas, datasets, unstructured, pandas, tqdm) are deliberately NOT here — they'd
+# bloat the build and the ~1GB runtime. Full local set: requirements-dev.txt.
+
+# UI
+streamlit==1.58.0
+
+# LangChain core + integrations
+langchain==1.3.9
+langchain-core==1.4.7
+langchain-community==0.4.2
+langchain-openai==1.3.2
+
+# Agent runtime (langgraph.prebuilt.create_react_agent)
+langgraph==1.2.5
+
+# Vector store + LLM
+chromadb==1.5.9
+openai==2.41.1
+tiktoken==0.13.0
+
+# Web-search fallback + page scraping
+ddgs==9.14.4
+beautifulsoup4==4.15.0
+requests==2.34.2
+
+# Config + logging
+python-dotenv==1.2.2
+loguru==0.7.3

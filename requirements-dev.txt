@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# DocBrain — LOCAL dev / ingest / eval dependencies
+# ─────────────────────────────────────────────────────────────────────────────
+# Everything the serving app needs, PLUS the ingest + evaluation toolchain that
+# the deployed app never runs. Install locally with:
+#
+#   pip install -r requirements-dev.txt
+#
+# (The cloud deploy installs requirements.txt only — kept lean on purpose.)
+
+-r requirements.txt
+
+# Ingest — raw doc parsing + progress bars
+unstructured==0.23.1
+tqdm==4.68.2
+
+# Evaluation harness (src/evaluation.py)
+ragas==0.4.3
+datasets==5.0.0
+pandas==3.0.3
+
+# Optional Gemini fallback LLM (not used by the default gpt-4o-mini path)
+langchain-google-genai==4.2.5
