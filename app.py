@@ -37,6 +37,15 @@ st.set_page_config(
 )
 st.markdown(DOCBRAIN_CSS, unsafe_allow_html=True)
 
+# ── Ensure the vector DB exists (cloud cold-start) ────────────────────────────
+# The prebuilt Chroma index isn't in git (chroma.sqlite3 alone exceeds GitHub's
+# 100 MB per-file limit), so on Streamlit Cloud we lazy-download it from a GitHub
+# Release on first run. Locally the folder already exists → this is a no-op.
+from src.bootstrap_db import ensure_db, DB_SENTINEL
+if not DB_SENTINEL.exists():
+    with st.spinner("Downloading the knowledge base (first run only, ~1 min)…"):
+        ensure_db()
+
 USER_AVATAR = "🧑‍💻"
 BOT_AVATAR  = "🧠"
 
