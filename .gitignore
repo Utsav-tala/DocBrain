@@ -18,24 +18,17 @@ data/langchain_conceptual_docs/
 data/langchain_codebase/
 data/langchain_issues.json
 
-# OS / Editor
+# OS / Editor / tooling
 .DS_Store
 .vscode/
 .idea/
+.claude/
 
 # Streamlit
 .streamlit/secrets.toml
 
-# Evaluation results / scratch
-results/
-eval_data/
+# NOTE: eval_data/ (golden set) and results/ (eval numbers) are intentionally
+# TRACKED — they back the evaluation claims in the README.
 
-# Personal notes, planning docs & scratch scripts (not for public repo)
-que_ans_list.md
-implementation_plan.md
-INGEST_V2_PLAN.md
-DocBrain_Project_Idea.md
-tips_docs_load.md
-PROJECT_MEMORY.md
-debug_retrieval.py
-test_keys.py
+# Personal notes & planning docs (local only — not for the public repo)
+notes/

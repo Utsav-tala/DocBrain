@@ -1,0 +1,68 @@
+// DocBrain golden set — retrieval ground truth.
+//
+// SCHEMA
+//   id                : stable identifier, never reuse
+//   question          : the question as a real user would phrase it
+//   relevant_sources  : list of source-path SUBSTRINGS that correctly answer it.
+//                       A list, not a single value — several docs can legitimately be
+//                       correct (memory is documented across three separate files), and
+//                       demanding one exact file would be a mislabel, not a miss.
+//   coverage          : "covered" = the corpus can answer this
+//                       "gap"     = the corpus CANNOT answer this (verified by grep).
+//                                   Excluded from recall/MRR — scoring these as 0 would
+//                                   blame the retriever for a hole in the DATA. Used
+//                                   instead to calibrate the "go search the web" threshold.
+//   reviewed          : false = labelled by Claude from the file listing, NOT yet checked
+//                       by a human. Flip to true once you've confirmed the label.
+//
+// ⚠️  Every entry below is reviewed=false. These labels are a starting point, not
+//     ground truth. A golden set nobody has checked is just a confident-looking guess —
+//     go through them, fix the wrong ones, add alternates I missed, then flip the flag.
+//
+// ── COVERED ──────────────────────────────────────────────────────────────────────
+{"id": "q001", "question": "How do I stream tokens from a chat model as they're generated?", "relevant_sources": ["oss/langchain/streaming"], "coverage": "covered", "reviewed": false}
+{"id": "q002", "question": "How do I stream output from a LangGraph graph while it runs?", "relevant_sources": ["oss/langgraph/streaming", "oss/langgraph/event-streaming"], "coverage": "covered", "reviewed": false}
+{"id": "q003", "question": "How do I persist graph state so a conversation survives a restart?", "relevant_sources": ["oss/langgraph/checkpointers"], "coverage": "covered", "reviewed": false}
+{"id": "q004", "question": "How do I make a model return JSON that matches a schema?", "relevant_sources": ["oss/langchain/structured-output"], "coverage": "covered", "reviewed": false}
+{"id": "q005", "question": "How do I define a custom tool an agent can call?", "relevant_sources": ["oss/langchain/tools"], "coverage": "covered", "reviewed": false}
+{"id": "q006", "question": "How do I pause execution to get human approval before a step runs?", "relevant_sources": ["oss/langgraph/interrupts", "oss/langchain/human-in-the-loop"], "coverage": "covered", "reviewed": false}
+{"id": "q007", "question": "How do I nest one graph inside another graph?", "relevant_sources": ["oss/langgraph/use-subgraphs"], "coverage": "covered", "reviewed": false}
+{"id": "q008", "question": "What middleware ships with LangChain out of the box?", "relevant_sources": ["oss/langchain/middleware/built-in"], "coverage": "covered", "reviewed": false}
+{"id": "q009", "question": "How do I write my own custom middleware?", "relevant_sources": ["oss/langchain/middleware/custom"], "coverage": "covered", "reviewed": false}
+{"id": "q010", "question": "How do I connect an MCP server to my agent?", "relevant_sources": ["oss/langchain/mcp"], "coverage": "covered", "reviewed": false}
+{"id": "q011", "question": "How do I build a RAG pipeline over my own documents?", "relevant_sources": ["oss/langchain/rag", "oss/langchain/knowledge-base"], "coverage": "covered", "reviewed": false}
+{"id": "q012", "question": "How do I build an agentic RAG system that decides when to retrieve?", "relevant_sources": ["oss/langgraph/agentic-rag"], "coverage": "covered", "reviewed": false}
+{"id": "q013", "question": "How do I give my agent memory of previous turns?", "relevant_sources": ["oss/langgraph/add-memory", "oss/langchain/short-term-memory", "oss/concepts/memory"], "coverage": "covered", "reviewed": false}
+{"id": "q014", "question": "How do I store long-term memories that persist across different threads?", "relevant_sources": ["oss/langgraph/stores"], "coverage": "covered", "reviewed": false}
+{"id": "q015", "question": "How do I migrate my code to LangChain v1?", "relevant_sources": ["oss/python/migrate/langchain-v1"], "coverage": "covered", "reviewed": false}
+{"id": "q016", "question": "What happens if a node throws an exception halfway through a run?", "relevant_sources": ["oss/langgraph/fault-tolerance"], "coverage": "covered", "reviewed": false}
+{"id": "q017", "question": "How do I add guardrails to stop an agent producing unsafe output?", "relevant_sources": ["oss/langchain/guardrails"], "coverage": "covered", "reviewed": false}
+{"id": "q018", "question": "What are the entrypoint and task decorators for?", "relevant_sources": ["oss/langgraph/functional-api", "oss/langgraph/use-functional-api"], "coverage": "covered", "reviewed": false}
+{"id": "q019", "question": "How do I build a StateGraph with nodes and edges?", "relevant_sources": ["oss/langgraph/graph-api", "oss/langgraph/use-graph-api"], "coverage": "covered", "reviewed": false}
+{"id": "q020", "question": "How do I configure which chat model my app uses?", "relevant_sources": ["oss/langchain/models"], "coverage": "covered", "reviewed": false}
+{"id": "q021", "question": "What are the different message types and when do I use each?", "relevant_sources": ["oss/langchain/messages"], "coverage": "covered", "reviewed": false}
+{"id": "q022", "question": "Should I use the graph API or the functional API?", "relevant_sources": ["oss/langgraph/choosing-apis"], "coverage": "covered", "reviewed": false}
+{"id": "q023", "question": "How do I stop my agent blowing past the context window?", "relevant_sources": ["oss/langchain/context-engineering"], "coverage": "covered", "reviewed": false}
+{"id": "q024", "question": "How do I build an agent that queries a SQL database?", "relevant_sources": ["oss/langchain/sql-agent", "oss/langgraph/sql-agent", "oss/langchain/multi-agent/skills-sql-assistant"], "coverage": "covered", "reviewed": false}
+{"id": "q025", "question": "How do I get started with LangChain from scratch?", "relevant_sources": ["oss/langchain/quickstart", "oss/langgraph/quickstart"], "coverage": "covered", "reviewed": false}
+{"id": "q026", "question": "What is Pregel and how does it relate to LangGraph?", "relevant_sources": ["oss/langgraph/pregel"], "coverage": "covered", "reviewed": false}
+{"id": "q027", "question": "How do I evaluate whether my agent is actually any good?", "relevant_sources": ["oss/langchain/test/evals"], "coverage": "covered", "reviewed": false}
+{"id": "q028", "question": "How does one agent hand off control to another agent?", "relevant_sources": ["oss/langchain/multi-agent/handoffs"], "coverage": "covered", "reviewed": false}
+{"id": "q029", "question": "How do I create subagents that a main agent can delegate to?", "relevant_sources": ["oss/langchain/multi-agent/subagents"], "coverage": "covered", "reviewed": false}
+{"id": "q030", "question": "What is the difference between a workflow and an agent?", "relevant_sources": ["oss/langgraph/workflows-agents"], "coverage": "covered", "reviewed": false}
+{"id": "q031", "question": "How should I think about modelling a problem in LangGraph?", "relevant_sources": ["oss/langgraph/thinking-in-langgraph"], "coverage": "covered", "reviewed": false}
+{"id": "q032", "question": "How do I build a voice agent?", "relevant_sources": ["oss/langchain/voice-agent"], "coverage": "covered", "reviewed": false}
+//
+// ── COVERAGE GAPS (verified absent — grep found these ONLY as incidental mentions
+//    inside third-party integration pages, never in a doc that explains them) ───────
+//
+// These are the dangerous questions. The corpus has just enough scattered mentions to
+// let retrieval return something plausible, so the LLM writes a confident answer from
+// an integration page that merely name-drops the concept. The system should recognise
+// it cannot answer these and go to the web instead.
+{"id": "g001", "question": "What is LCEL in LangChain?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "LangChain's current docs dropped LCEL as a concept page. Only mention in the corpus is the runnables/__init__.py docstring."}
+{"id": "g002", "question": "How do I use LLMChain to run a prompt?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "Legacy API. 9 hits, all incidental usage inside integration pages."}
+{"id": "g003", "question": "What is SequentialChain and how do I chain steps with it?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "Legacy API. 1 hit, in an unrelated graph integration page."}
+{"id": "g004", "question": "How do I use ConversationBufferMemory to remember chat history?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "Legacy memory API. 1 hit, in the gradio_tools integration page."}
+{"id": "g005", "question": "What is AgentExecutor and how do I run an agent with it?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "Legacy agent runtime. 28 hits, all incidental usage in integration pages."}
+{"id": "g006", "question": "How do I use initialize_agent to set up an agent?", "relevant_sources": [], "coverage": "gap", "reviewed": false, "notes": "Legacy helper. Zero hits anywhere in the conceptual docs."}

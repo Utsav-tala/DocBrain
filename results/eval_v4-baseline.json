@@ -1,0 +1,776 @@
+{
+  "label": "v4-baseline",
+  "golden_set": "eval_data/golden_set.jsonl",
+  "k": 5,
+  "n_covered": 32,
+  "n_gaps": 6,
+  "metrics": {
+    "hit@5": 0.875,
+    "recall@5": 0.8333,
+    "mrr": 0.7875
+  },
+  "gap_calibration": {
+    "threshold": null,
+    "reason": "no distances recorded"
+  },
+  "per_question": [
+    {
+      "id": "q001",
+      "question": "How do I stream tokens from a chat model as they're generated?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 0.25,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/streaming"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/streaming.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx"
+      ]
+    },
+    {
+      "id": "q002",
+      "question": "How do I stream output from a LangGraph graph while it runs?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/streaming",
+        "oss/langgraph/event-streaming"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/streaming.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/event-streaming.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/streaming.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/streaming.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/streaming.mdx"
+      ]
+    },
+    {
+      "id": "q003",
+      "question": "How do I persist graph state so a conversation survives a restart?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/checkpointers"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/checkpointers.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/add-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/persistence.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/checkpointers.mdx"
+      ]
+    },
+    {
+      "id": "q004",
+      "question": "How do I make a model return JSON that matches a schema?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/structured-output"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx"
+      ]
+    },
+    {
+      "id": "q005",
+      "question": "How do I define a custom tool an agent can call?",
+      "coverage": "covered",
+      "intent": "concept_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 0.5,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/tools"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/tools.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/tools.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/built-in.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx"
+      ]
+    },
+    {
+      "id": "q006",
+      "question": "How do I pause execution to get human approval before a step runs?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/interrupts",
+        "oss/langchain/human-in-the-loop"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/human-in-the-loop.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/human-in-the-loop.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/human-in-the-loop.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/human-in-the-loop.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/human-in-the-loop.mdx"
+      ]
+    },
+    {
+      "id": "q007",
+      "question": "How do I nest one graph inside another graph?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/use-subgraphs"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx"
+      ]
+    },
+    {
+      "id": "q008",
+      "question": "What middleware ships with LangChain out of the box?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/middleware/built-in"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/built-in.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/products.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/built-in.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/install.mdx"
+      ]
+    },
+    {
+      "id": "q009",
+      "question": "How do I write my own custom middleware?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/middleware/custom"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/custom.mdx"
+      ]
+    },
+    {
+      "id": "q010",
+      "question": "How do I connect an MCP server to my agent?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/mcp"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx"
+      ]
+    },
+    {
+      "id": "q011",
+      "question": "How do I build a RAG pipeline over my own documents?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/rag",
+        "oss/langchain/knowledge-base"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx"
+      ]
+    },
+    {
+      "id": "q012",
+      "question": "How do I build an agentic RAG system that decides when to retrieve?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/agentic-rag"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx"
+      ]
+    },
+    {
+      "id": "q013",
+      "question": "How do I give my agent memory of previous turns?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/add-memory",
+        "oss/langchain/short-term-memory",
+        "oss/concepts/memory"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/add-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/short-term-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/add-memory.mdx"
+      ]
+    },
+    {
+      "id": "q014",
+      "question": "How do I store long-term memories that persist across different threads?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/stores"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/long-term-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/long-term-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx"
+      ]
+    },
+    {
+      "id": "q015",
+      "question": "How do I migrate my code to LangChain v1?",
+      "coverage": "covered",
+      "intent": "migration_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/python/migrate/langchain-v1"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langgraph-v1.mdx"
+      ]
+    },
+    {
+      "id": "q016",
+      "question": "What happens if a node throws an exception halfway through a run?",
+      "coverage": "covered",
+      "intent": "error_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 0.25,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/fault-tolerance"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/errors/OUTPUT_PARSING_FAILURE.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/errors/MODEL_RATE_LIMIT.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/errors/INVALID_PROMPT_INPUT.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/fault-tolerance.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/fault-tolerance.mdx"
+      ]
+    },
+    {
+      "id": "q017",
+      "question": "How do I add guardrails to stop an agent producing unsafe output?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/guardrails"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/guardrails.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/guardrails.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/guardrails.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/guardrails.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/guardrails.mdx"
+      ]
+    },
+    {
+      "id": "q018",
+      "question": "What are the entrypoint and task decorators for?",
+      "coverage": "covered",
+      "intent": "concept_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/functional-api",
+        "oss/langgraph/use-functional-api"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/functional-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/backward-compatibility.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/functional-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/functional-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-functional-api.mdx"
+      ]
+    },
+    {
+      "id": "q019",
+      "question": "How do I build a StateGraph with nodes and edges?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/graph-api",
+        "oss/langgraph/use-graph-api"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/graph-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/graph-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-graph-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-subgraphs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-graph-api.mdx"
+      ]
+    },
+    {
+      "id": "q020",
+      "question": "How do I configure which chat model my app uses?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/models"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/providers-and-models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/models.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/quickstart.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/quickstart.mdx"
+      ]
+    },
+    {
+      "id": "q021",
+      "question": "What are the different message types and when do I use each?",
+      "coverage": "covered",
+      "intent": "concept_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/messages"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/messages.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/messages.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/messages.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/messages.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/messages.mdx"
+      ]
+    },
+    {
+      "id": "q022",
+      "question": "Should I use the graph API or the functional API?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 0.2,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/choosing-apis"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/retrieval.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/test/unit-testing.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/functional-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/choosing-apis.mdx"
+      ]
+    },
+    {
+      "id": "q023",
+      "question": "How do I stop my agent blowing past the context window?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/context-engineering"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/context-engineering.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/context-engineering.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/middleware/built-in.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/context.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx"
+      ]
+    },
+    {
+      "id": "q024",
+      "question": "How do I build an agent that queries a SQL database?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 0.667,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/sql-agent",
+        "oss/langgraph/sql-agent",
+        "oss/langchain/multi-agent/skills-sql-assistant"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/skills-sql-assistant.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx"
+      ]
+    },
+    {
+      "id": "q025",
+      "question": "How do I get started with LangChain from scratch?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/quickstart",
+        "oss/langgraph/quickstart"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/install.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/install.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/rag.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/academy.mdx"
+      ]
+    },
+    {
+      "id": "q026",
+      "question": "What is Pregel and how does it relate to LangGraph?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/pregel"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/pregel.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/pregel.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/pregel.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/pregel.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/pregel.mdx"
+      ]
+    },
+    {
+      "id": "q027",
+      "question": "How do I evaluate whether my agent is actually any good?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/test/evals"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/test/evals.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/test/index.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/test/evals.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/quickstart.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/test/evals.mdx"
+      ]
+    },
+    {
+      "id": "q028",
+      "question": "How does one agent hand off control to another agent?",
+      "coverage": "covered",
+      "intent": "general",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/multi-agent/handoffs"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/handoffs.mdx"
+      ]
+    },
+    {
+      "id": "q029",
+      "question": "How do I create subagents that a main agent can delegate to?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/multi-agent/subagents"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx"
+      ]
+    },
+    {
+      "id": "q030",
+      "question": "What is the difference between a workflow and an agent?",
+      "coverage": "covered",
+      "intent": "concept_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/workflows-agents"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/workflows-agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/custom-workflow.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/custom-workflow.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/workflows-agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/workflows-agents.mdx"
+      ]
+    },
+    {
+      "id": "q031",
+      "question": "How should I think about modelling a problem in LangGraph?",
+      "coverage": "covered",
+      "intent": "langgraph_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langgraph/thinking-in-langgraph"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langgraph/thinking-in-langgraph.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/thinking-in-langgraph.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/thinking-in-langgraph.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/use-graph-api.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/overview.mdx"
+      ]
+    },
+    {
+      "id": "q032",
+      "question": "How do I build a voice agent?",
+      "coverage": "covered",
+      "intent": "code_query",
+      "hit": 1.0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "top1_distance": NaN,
+      "relevant_sources": [
+        "oss/langchain/voice-agent"
+      ],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/voice-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/voice-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/voice-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/voice-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/voice-agent.mdx"
+      ]
+    },
+    {
+      "id": "g001",
+      "question": "What is LCEL in LangChain?",
+      "coverage": "gap",
+      "intent": "concept_query",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/academy.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/products.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx"
+      ]
+    },
+    {
+      "id": "g002",
+      "question": "How do I use LLMChain to run a prompt?",
+      "coverage": "gap",
+      "intent": "migration_query",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/python/migrate/langchain-v1.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/errors/INVALID_PROMPT_INPUT.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/mcp.mdx"
+      ]
+    },
+    {
+      "id": "g003",
+      "question": "What is SequentialChain and how do I chain steps with it?",
+      "coverage": "gap",
+      "intent": "concept_query",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/philosophy.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/overview.mdx",
+        "data/langchain_codebase/libs/core/langchain_core/tracers/base.py",
+        "data/langchain_codebase/libs/core/langchain_core/runnables/base.py"
+      ]
+    },
+    {
+      "id": "g004",
+      "question": "How do I use ConversationBufferMemory to remember chat history?",
+      "coverage": "gap",
+      "intent": "general",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/short-term-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/concepts/memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/add-memory.mdx",
+        "data/langchain_conceptual_docs/src/oss/langgraph/add-memory.mdx"
+      ]
+    },
+    {
+      "id": "g005",
+      "question": "What is AgentExecutor and how do I run an agent with it?",
+      "coverage": "gap",
+      "intent": "concept_query",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/multi-agent/subagents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx"
+      ]
+    },
+    {
+      "id": "g006",
+      "question": "How do I use initialize_agent to set up an agent?",
+      "coverage": "gap",
+      "intent": "general",
+      "hit": 0.0,
+      "recall": 0.0,
+      "mrr": 0.0,
+      "top1_distance": NaN,
+      "relevant_sources": [],
+      "retrieved_sources": [
+        "data/langchain_conceptual_docs/src/oss/langchain/quickstart.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/sql-agent.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/quickstart.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx",
+        "data/langchain_conceptual_docs/src/oss/langchain/agents.mdx"
+      ]
+    }
+  ]
+}
